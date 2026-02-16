@@ -9,6 +9,8 @@ import CustomerTable from '@/components/CustomerTable';
 import CustomerDetail from '@/components/CustomerDetail';
 import RiskSignals from '@/components/RiskSignals';
 import Interventions from '@/components/Interventions';
+import ArchetypeChart from '@/components/ArchetypeChart';
+import Settings from '@/components/Settings';
 import { customers } from '@/data/customers';
 
 export default function Home() {
