@@ -8,6 +8,7 @@ import RiskCharts from '@/components/RiskCharts';
 import CustomerTable from '@/components/CustomerTable';
 import CustomerDetail from '@/components/CustomerDetail';
 import RiskSignals from '@/components/RiskSignals';
+import Interventions from '@/components/Interventions';
 import { customers } from '@/data/customers';
 
 export default function Home() {
@@ -62,8 +63,13 @@ export default function Home() {
         handleSelectCustomer(exact.id);
         return;
       }
+      // Switch to customers view so the filtered table is visible
+      if (query.trim() && activeView !== 'overview' && activeView !== 'customers') {
+        setActiveView('customers');
+        setSelectedCustomerId(null);
+      }
       if (activeView === 'detail') {
-        setActiveView('overview');
+        setActiveView('customers');
         setSelectedCustomerId(null);
       }
     },
@@ -127,6 +133,11 @@ export default function Home() {
           {/* Risk Signals */}
           {activeView === 'signals' && (
             <RiskSignals />
+          )}
+
+          {/* Interventions */}
+          {activeView === 'interventions' && (
+            <Interventions />
           )}
 
           {/* Customer Detail */}
