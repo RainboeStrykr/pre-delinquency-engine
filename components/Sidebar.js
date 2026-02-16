@@ -24,13 +24,6 @@ export default function Sidebar({ activeView, onNavigate, onSettingsClick }) {
             ),
         },
         {
-            id: 'model',
-            label: 'Model Insights',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-            ),
-        },
-        {
             id: 'interventions',
             label: 'Interventions',
             icon: (
@@ -43,7 +36,7 @@ export default function Sidebar({ activeView, onNavigate, onSettingsClick }) {
         <aside className="sidebar">
             <div className="sidebar-brand">
                 <h1>Pre-Delinquency<br />Intervention Engine</h1>
-                <span>Credit Risk Analytics</span>
+                <span>TEAM CODECUTIES</span>
             </div>
             <nav className="sidebar-nav">
                 {navItems.map((item) => (

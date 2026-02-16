@@ -82,8 +82,9 @@ export default function Home() {
   const handleRiskFilter = useCallback(
     (val) => {
       setRiskFilter(val);
-      if (activeView === 'detail') {
-        setActiveView('overview');
+      // Switch to a view that shows the customer table
+      if (activeView !== 'overview' && activeView !== 'customers') {
+        setActiveView('customers');
         setSelectedCustomerId(null);
       }
     },
@@ -104,6 +105,7 @@ export default function Home() {
       />
       <div className="main">
         <Header
+          activeView={activeView}
           searchQuery={searchQuery}
           onSearchChange={handleSearch}
           riskFilter={riskFilter}
