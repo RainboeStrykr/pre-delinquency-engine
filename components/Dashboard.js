@@ -9,7 +9,6 @@ import CustomerTable from '@/components/CustomerTable';
 import CustomerDetail from '@/components/CustomerDetail';
 import RiskSignals from '@/components/RiskSignals';
 import Interventions from '@/components/Interventions';
-import Settings from '@/components/Settings';
 import { customers } from '@/data/customers';
 
 export default function Home() {
@@ -118,6 +117,17 @@ export default function Home() {
               <h2 className="section-title">Portfolio Overview</h2>
               <MetricsRow />
               <RiskCharts />
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                <ArchetypeChart />
+                {/* Empty slot for balance projection aggregate or migration matrix */}
+                <div className="chart-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', minHeight: '300px', background: '#F9FAFB', borderStyle: 'dashed' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔄</div>
+                  <div style={{ fontWeight: 500 }}>Risk Migration Matrix</div>
+                  <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Coming soon in Phase 2</div>
+                </div>
+              </div>
+
               <CustomerTable
                 customers={filteredCustomers}
                 onSelectCustomer={handleSelectCustomer}

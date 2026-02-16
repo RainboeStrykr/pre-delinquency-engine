@@ -1,272 +1,83 @@
+
 'use client';
 
+import { useMemo } from 'react';
+// Import the Unified Stress Index Engine (which aggregates Drift, Cashflow, Accel)
+import { calculateUnifiedIndex } from '@/lib/engines/unified-stress-index';
 import { customers } from '@/data/customers';
 
-const signalDefinitions = [
-    {
-        id: 'salary_delay',
-        name: 'Salary Credit Delay',
-        description: 'Number of days salary credit is delayed compared to the customer\'s usual salary date pattern.',
-        dataSource: 'Account credit transactions tagged as salary',
-        thresholds: [
-            { level: 'Normal', range: '0 days', color: 'low' },
-            { level: 'Warning', range: '1–5 days', color: 'medium' },
-            { level: 'Critical', range: '> 5 days', color: 'high' },
-        ],
-        weight: 0.25,
-        logic: 'Compare current month salary credit date against rolling 6-month average salary date. Flag if delta exceeds threshold.',
-    },
-    {
-        id: 'savings_decline',
-        name: 'Week-over-Week Savings Decline',
-        description: 'Percentage decline in savings/current account balance compared to the same day in the previous week.',
-        dataSource: 'Daily closing balance snapshots',
-        thresholds: [
-            { level: 'Normal', range: '< 5%', color: 'low' },
-            { level: 'Warning', range: '5–15%', color: 'medium' },
-            { level: 'Critical', range: '> 15%', color: 'high' },
-        ],
-        weight: 0.20,
-        logic: 'Calculate (Balance_W-1 − Balance_W) / Balance_W-1 × 100. Flag if consecutive 2+ weeks show decline above threshold.',
-    },
-    {
-        id: 'auto_debit_fails',
-        name: 'Auto-Debit / Standing Instruction Failures',
-        description: 'Count of failed auto-debits (EMI, SIP, insurance, utility) in the current billing cycle.',
-        dataSource: 'Payment gateway response codes + NACH mandate status',
-        thresholds: [
-            { level: 'Normal', range: '0', color: 'low' },
-            { level: 'Warning', range: '1', color: 'medium' },
-            { level: 'Critical', range: '≥ 2', color: 'high' },
-        ],
-        weight: 0.20,
-        logic: 'Count all auto-debit transactions with status "failed" or "bounced" in the last 30 days. Consecutive failures in the same mandate carry extra weight.',
-    },
-    {
-        id: 'discretionary_drop',
-        name: 'Discretionary Spending Drop',
-        description: 'Percentage decline in non-essential spending (dining, entertainment, shopping, travel) versus the 3-month rolling average.',
-        dataSource: 'MCC-classified debit transactions',
-        thresholds: [
-            { level: 'Normal', range: '< 5%', color: 'low' },
-            { level: 'Warning', range: '5–15%', color: 'medium' },
-            { level: 'Critical', range: '> 15%', color: 'high' },
-        ],
-        weight: 0.15,
-        logic: 'Aggregate discretionary MCC codes spend for current month vs 3-month rolling avg. A sharp drop signals the customer is consciously cutting back—an early stress indicator.',
-    },
-    {
-        id: 'atm_increase',
-        name: 'ATM Withdrawal Increase',
-        description: 'Percentage increase in ATM cash withdrawals compared to the 3-month rolling average, suggesting cash hoarding behavior.',
-        dataSource: 'ATM transaction logs',
-        thresholds: [
-            { level: 'Normal', range: '< 10%', color: 'low' },
-            { level: 'Warning', range: '10–30%', color: 'medium' },
-            { level: 'Critical', range: '> 30%', color: 'high' },
-        ],
-        weight: 0.10,
-        logic: 'Compare current month ATM withdrawal amount to 3-month rolling average. Spike in cash withdrawals often precedes delinquency as customers shift to cash-based spending.',
-    },
-];
-
-const riskScoringRules = [
-    { range: '0 – 30', level: 'Low', color: 'low', action: 'No intervention. Standard monitoring.' },
-    { range: '31 – 60', level: 'Medium', color: 'medium', action: 'Soft outreach. Financial wellness tips. Monitor weekly.' },
-    { range: '61 – 80', level: 'High', color: 'high', action: 'Proactive engagement. Offer restructuring options. Assign RM.' },
-    { range: '81 – 100', level: 'Critical', color: 'high', action: 'Immediate intervention. EMI holiday / restructuring. Escalate to collections prevention.' },
-];
-
-function getSignalValue(customer, signalId) {
-    const map = {
-        salary_delay: customer.stress.salaryDelay,
-        savings_decline: customer.stress.savingsDecline,
-        auto_debit_fails: customer.stress.autoDebitFails,
-        discretionary_drop: customer.stress.discretionaryDrop,
-        atm_increase: customer.stress.atmIncrease,
-    };
-    return map[signalId];
-}
-
 export default function RiskSignals() {
-    // Count customers by severity per signal
-    const signalStats = signalDefinitions.map((sig) => {
-        let normal = 0, warning = 0, critical = 0;
-        customers.forEach((c) => {
-            const val = getSignalValue(c, sig.id);
-            if (val.severity === 'danger') critical++;
-            else if (val.severity === 'warning') warning++;
-            else normal++;
-        });
-        return { ...sig, normal, warning, critical };
-    });
+    // Bulk compute risk profiles for the entire portfolio
+    const analysis = useMemo(() => {
+        return customers.map(c => {
+            const result = calculateUnifiedIndex(c);
+            return {
+                ...c,
+                usi: result.score,
+                level: result.level,
+                components: result.components // { static, drift, accel, cashflow }
+            };
+        }).sort((a, b) => b.usi - a.usi); // Sort by highest risk
+    }, []);
+
+    const stats = {
+        CRITICAL: analysis.filter(c => c.level === 'CRITICAL').length,
+        HIGH: analysis.filter(c => c.level === 'HIGH').length,
+        MODERATE: analysis.filter(c => c.level === 'MODERATE').length,
+        LOW: analysis.filter(c => c.level === 'LOW').length,
+    };
 
     return (
         <div>
-            <h2 className="section-title">Risk Signals — Flagging Criteria</h2>
+            <h2 className="section-title">Portfolio Risk Signals (USI)</h2>
             <p style={{ color: 'var(--gray-500)', fontSize: '0.82rem', marginBottom: '20px', lineHeight: 1.7 }}>
-                The Pre-Delinquency Engine monitors five financial stress signals per customer. Each signal is evaluated against defined thresholds to determine severity.
-                Signals are weighted and combined into a composite risk score (0–100).
+                Real-time analysis using the <strong>Unified Stress Index (USI)</strong>.
+                This engine aggregates Behavioral Drift, Spend Velocity, and Cashflow Projections into a single live health score.
             </p>
 
-            {/* Risk Score Bands */}
-            <div className="panel" style={{ marginBottom: '20px' }}>
-                <div className="panel-header">
-                    <h3>Composite Risk Score Bands</h3>
-                </div>
-                <div className="panel-body">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Score Range</th>
-                                <th>Risk Level</th>
-                                <th>Recommended Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {riskScoringRules.map((rule, i) => (
-                                <tr key={i} style={{ cursor: 'default' }}>
-                                    <td style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{rule.range}</td>
-                                    <td><span className={`risk-badge ${rule.color}`}>{rule.level}</span></td>
-                                    <td style={{ fontSize: '0.8rem', color: 'var(--gray-600)' }}>{rule.action}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="explanation-box" style={{ marginTop: '16px' }}>
-                        <strong>Scoring Formula:</strong> Risk Score = Σ (Signal Weight × Signal Severity Factor) × 100.
-                        Severity factors: Normal = 0.0, Warning = 0.5, Critical = 1.0.
-                        Consecutive critical signals across multiple categories receive a 1.15× compounding multiplier.
-                    </div>
-                </div>
+            {/* Portfolio Summary Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                <RiskCard label="Critical" count={stats.CRITICAL} color="red" desc="Imminent Default Risk" />
+                <RiskCard label="High" count={stats.HIGH} color="orange" desc="Significant Stress" />
+                <RiskCard label="Moderate" count={stats.MODERATE} color="blue" desc="Watchlist / Emerging" />
+                <RiskCard label="Low" count={stats.LOW} color="green" desc="Healthy Behavior" />
             </div>
 
-            {/* Signal Definitions */}
-            <h2 className="section-title" style={{ marginTop: '8px' }}>Signal Definitions &amp; Thresholds</h2>
-
-            {signalStats.map((sig) => (
-                <div className="panel" key={sig.id} style={{ marginBottom: '16px' }}>
-                    <div className="panel-header">
-                        <h3>{sig.name}</h3>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--gray-400)', fontWeight: 500 }}>
-                            Weight: {(sig.weight * 100).toFixed(0)}%
-                        </span>
-                    </div>
-                    <div className="panel-body">
-                        <p style={{ color: 'var(--gray-600)', fontSize: '0.82rem', marginBottom: '14px', lineHeight: 1.6 }}>
-                            {sig.description}
-                        </p>
-
-                        {/* Thresholds */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '14px' }}>
-                            {sig.thresholds.map((t, i) => (
-                                <div
-                                    key={i}
-                                    className={`stress-card ${t.color === 'high' ? 'danger' : t.color === 'medium' ? 'warning' : ''}`}
-                                >
-                                    <div className="stress-label">{t.level}</div>
-                                    <div className="stress-value" style={{ fontSize: '1rem' }}>{t.range}</div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Portfolio impact */}
-                        <div style={{ display: 'flex', gap: '16px', marginBottom: '14px' }}>
-                            <div style={{
-                                flex: 1, padding: '10px 14px', borderRadius: '8px',
-                                background: 'var(--risk-low-bg)', textAlign: 'center'
-                            }}>
-                                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--risk-low)' }}>{sig.normal}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Normal</div>
-                            </div>
-                            <div style={{
-                                flex: 1, padding: '10px 14px', borderRadius: '8px',
-                                background: 'var(--risk-medium-bg)', textAlign: 'center'
-                            }}>
-                                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--risk-medium)' }}>{sig.warning}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Warning</div>
-                            </div>
-                            <div style={{
-                                flex: 1, padding: '10px 14px', borderRadius: '8px',
-                                background: 'var(--risk-high-bg)', textAlign: 'center'
-                            }}>
-                                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--risk-high)' }}>{sig.critical}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Critical</div>
-                            </div>
-                        </div>
-
-                        {/* Details */}
-                        <div style={{
-                            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px',
-                            padding: '14px', background: 'var(--gray-50)', borderRadius: '8px', fontSize: '0.78rem'
-                        }}>
-                            <div>
-                                <span style={{ color: 'var(--gray-400)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 500 }}>Data Source</span>
-                                <div style={{ color: 'var(--gray-700)', marginTop: '4px', fontWeight: 500 }}>{sig.dataSource}</div>
-                            </div>
-                            <div>
-                                <span style={{ color: 'var(--gray-400)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 500 }}>Detection Logic</span>
-                                <div style={{ color: 'var(--gray-700)', marginTop: '4px', fontWeight: 500 }}>{sig.logic}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ))}
-
-            {/* Customer Signal Matrix */}
-            <h2 className="section-title" style={{ marginTop: '8px' }}>Customer Signal Matrix</h2>
+            {/* Detailed Matrix */}
             <div className="panel">
                 <div className="panel-header">
-                    <h3>Current Signal Status by Customer</h3>
+                    <h3>Unified Stress Index Matrix</h3>
                 </div>
                 <div className="panel-body" style={{ overflowX: 'auto' }}>
-                    <table>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Salary Delay</th>
-                                <th>Savings Decline</th>
-                                <th>Auto-Debit Fails</th>
-                                <th>Discr. Spend Drop</th>
-                                <th>ATM Increase</th>
-                                <th>Risk Score</th>
+                            <tr style={{ borderBottom: '1px solid #E5E7EB', textAlign: 'left' }}>
+                                <th style={{ padding: '12px', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Customer</th>
+                                <th style={{ padding: '12px', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>USI Score</th>
+                                <th style={{ padding: '12px', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Drift Impact</th>
+                                <th style={{ padding: '12px', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Velocity Impact</th>
+                                <th style={{ padding: '12px', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Liquidity Gap</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {customers.map((c) => (
-                                <tr key={c.id} style={{ cursor: 'default' }}>
-                                    <td>
-                                        <strong>{c.id}</strong>
-                                        <br />
-                                        <span style={{ color: 'var(--gray-400)', fontSize: '0.7rem' }}>{c.name}</span>
+                            {analysis.map((c) => (
+                                <tr key={c.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                                    <td style={{ padding: '12px' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{c.name}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>ID: {c.id}</div>
                                     </td>
-                                    <td>
-                                        <span className={`risk-badge ${severityToBadge(c.stress.salaryDelay.severity)}`}>
-                                            {c.stress.salaryDelay.value}{c.stress.salaryDelay.unit}
-                                        </span>
+                                    <td style={{ padding: '12px' }}>
+                                        <Badge level={c.level} score={c.usi} />
                                     </td>
-                                    <td>
-                                        <span className={`risk-badge ${severityToBadge(c.stress.savingsDecline.severity)}`}>
-                                            {c.stress.savingsDecline.value}{c.stress.savingsDecline.unit}
-                                        </span>
+                                    {/* Component Breakdown (normalized 0-100 contributions) */}
+                                    <td style={{ padding: '12px' }}>
+                                        <Bar value={c.components.drift} max={20} color="#3B82F6" />
                                     </td>
-                                    <td>
-                                        <span className={`risk-badge ${severityToBadge(c.stress.autoDebitFails.severity)}`}>
-                                            {c.stress.autoDebitFails.value}
-                                        </span>
+                                    <td style={{ padding: '12px' }}>
+                                        <Bar value={c.components.accel} max={20} color="#8B5CF6" />
                                     </td>
-                                    <td>
-                                        <span className={`risk-badge ${severityToBadge(c.stress.discretionaryDrop.severity)}`}>
-                                            {c.stress.discretionaryDrop.value}{c.stress.discretionaryDrop.unit}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className={`risk-badge ${severityToBadge(c.stress.atmIncrease.severity)}`}>
-                                            {c.stress.atmIncrease.value}{c.stress.atmIncrease.unit}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className={`risk-score ${c.riskLevel}`} style={{ fontSize: '1rem' }}>{c.riskScore}</span>
+                                    <td style={{ padding: '12px' }}>
+                                        <Bar value={c.components.cashflow} max={40} color="#F59E0B" />
                                     </td>
                                 </tr>
                             ))}
@@ -278,8 +89,54 @@ export default function RiskSignals() {
     );
 }
 
-function severityToBadge(severity) {
-    if (severity === 'danger') return 'high';
-    if (severity === 'warning') return 'medium';
-    return 'low';
+// Sub-components for clean rendering
+function RiskCard({ label, count, color, desc }) {
+    const colors = {
+        red: { bg: '#FEF2F2', text: '#DC2626' },
+        orange: { bg: '#FFFBEB', text: '#D97706' },
+        blue: { bg: '#EFF6FF', text: '#2563EB' },
+        green: { bg: '#ECFDF5', text: '#059669' },
+    };
+    const c = colors[color];
+    return (
+        <div style={{ background: 'white', padding: '16px', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#6B7280', fontWeight: 600, letterSpacing: '0.05em' }}>{label}</div>
+            <div style={{ fontSize: '2rem', fontWeight: 700, color: c.text, margin: '8px 0' }}>{count}</div>
+            <div style={{ fontSize: '0.75rem', color: c.text, background: c.bg, display: 'inline-block', padding: '2px 8px', borderRadius: '12px', fontWeight: 500 }}>
+                {desc}
+            </div>
+        </div>
+    );
+}
+
+function Badge({ level, score }) {
+    const styles = {
+        CRITICAL: { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
+        HIGH: { bg: '#FFFBEB', text: '#D97706', border: '#FDE68A' },
+        MODERATE: { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },
+        LOW: { bg: '#ECFDF5', text: '#059669', border: '#A7F3D0' },
+    };
+    const s = styles[level] || styles.LOW;
+    return (
+        <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: '4px 12px', borderRadius: '20px',
+            background: s.bg, color: s.text, border: `1px solid ${s.border}`
+        }}>
+            <span style={{ fontWeight: 700, fontSize: '1rem' }}>{score}</span>
+            <span style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase' }}>{level}</span>
+        </div>
+    );
+}
+
+// Simple sparkline-like bar
+function Bar({ value, max, color }) {
+    // Normalize value against the max weight of that component (approx)
+    // E.g. Drift is max ~20 points of USI. 
+    const pct = Math.min(100, Math.max(0, (value / max) * 100));
+    return (
+        <div style={{ width: '100px', height: '6px', background: '#F3F4F6', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '3px' }} />
+        </div>
+    );
 }

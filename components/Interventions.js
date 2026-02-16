@@ -1,6 +1,8 @@
 'use client';
 
 import { customers } from '@/data/customers';
+import { useMemo } from 'react';
+import { calculateUnifiedIndex } from '@/lib/engines/unified-stress-index';
 
 const interventionTypes = [
     {
@@ -127,14 +129,24 @@ const interventionTypes = [
 const categories = [...new Set(interventionTypes.map((i) => i.category))];
 
 export default function Interventions() {
-    // Count how many customers currently have each intervention recommended
+    // Compute USI for portfolio to determine eligibility
+    const portfolioRisks = useMemo(() => {
+        return customers.map(c => calculateUnifiedIndex(c).score);
+    }, []);
+
+    // Count customers eligible for each intervention based on USI
     const interventionUsage = interventionTypes.map((intv) => {
         let count = 0;
-        customers.forEach((c) => {
-            if (c.interventions.some((ci) => ci.action.toLowerCase().includes(intv.name.toLowerCase().split(' ')[0]))) {
-                count++;
-            }
-        });
+        // Logic mapping USI to Intervention Categories
+        if (intv.riskLevel === 'low') {
+            count = portfolioRisks.filter(s => s < 40).length;
+        } else if (intv.riskLevel === 'medium') {
+            count = portfolioRisks.filter(s => s >= 40 && s < 70).length;
+        } else if (intv.riskLevel === 'high') {
+            // RM Assignment is Critical (>80), others are High (>70)
+            if (intv.id === 'rm_assignment') count = portfolioRisks.filter(s => s >= 80).length;
+            else count = portfolioRisks.filter(s => s >= 70).length;
+        }
         return { ...intv, activeCount: count };
     });
 

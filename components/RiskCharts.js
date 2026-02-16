@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useMemo } from 'react';
 import {
     Chart as ChartJS,
     ArcElement,
@@ -11,17 +12,47 @@ import {
     Legend,
 } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
+import { customers } from '@/data/customers';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const fontFamily = "'Inter', sans-serif";
 
 export default function RiskCharts() {
+
+    // Calculate real metrics from the Generated Dataset
+    const { riskCounts, archetypeCounts } = useMemo(() => {
+        const rCounts = { LOW: 0, MEDIUM: 0, HIGH: 0 };
+        const aCounts = {};
+
+        customers.forEach(c => {
+            // Risk Level Normalization
+            let level = (c.riskLevel || 'LOW').toUpperCase();
+            if (level === 'CRITICAL') level = 'HIGH'; // Group critical into high for simple donut
+            if (rCounts[level] !== undefined) rCounts[level]++;
+            else rCounts.LOW++;
+
+            // Archetype Aggregation
+            // Use the ground-truth archetype from the dataset
+            const arch = c.archetype || 'UNCLASSIFIED';
+            aCounts[arch] = (aCounts[arch] || 0) + 1;
+        });
+
+        // Sort archetypes by count descending
+        const sortedArch = Object.entries(aCounts)
+            .sort((a, b) => b[1] - a[1]);
+
+        return {
+            riskCounts: [rCounts.LOW, rCounts.MEDIUM, rCounts.HIGH],
+            archetypeCounts: sortedArch
+        };
+    }, []);
+
     const donutData = {
         labels: ['Low Risk', 'Medium Risk', 'High Risk'],
         datasets: [
             {
-                data: [8151, 3412, 1284],
+                data: riskCounts,
                 backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
                 borderWidth: 0,
                 hoverOffset: 6,
@@ -30,96 +61,81 @@ export default function RiskCharts() {
     };
 
     const donutOptions = {
-        cutout: '68%',
+        cutout: '70%',
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'bottom',
                 labels: {
-                    padding: 16,
                     usePointStyle: true,
                     pointStyleWidth: 8,
-                    font: { family: fontFamily, size: 11, weight: '500' },
+                    font: { family: fontFamily, size: 11 },
                     color: '#6B7280',
                 },
             },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const total = riskCounts.reduce((a, b) => a + b, 0);
+                        const val = context.raw;
+                        const pct = ((val / total) * 100).toFixed(1) + '%';
+                        return ` ${context.label}: ${val} (${pct})`;
+                    }
+                }
+            }
         },
     };
 
-    const trendData = {
-        labels: ['December', 'January', 'February'],
+    const barData = {
+        labels: archetypeCounts.map(([k, v]) => k.replace(/_/g, ' ')), // Format labels
         datasets: [
             {
-                label: 'Low',
-                data: [8420, 8290, 8151],
-                backgroundColor: '#10B981',
+                label: 'Customers',
+                data: archetypeCounts.map(([k, v]) => v),
+                backgroundColor: '#6366F1', // Indigo
                 borderRadius: 4,
                 barPercentage: 0.6,
-                categoryPercentage: 0.7,
-            },
-            {
-                label: 'Medium',
-                data: [3180, 3310, 3412],
-                backgroundColor: '#F59E0B',
-                borderRadius: 4,
-                barPercentage: 0.6,
-                categoryPercentage: 0.7,
-            },
-            {
-                label: 'High',
-                data: [1100, 1200, 1284],
-                backgroundColor: '#EF4444',
-                borderRadius: 4,
-                barPercentage: 0.6,
-                categoryPercentage: 0.7,
             },
         ],
     };
 
-    const trendOptions = {
+    const barOptions = {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
             x: {
                 grid: { display: false },
-                ticks: { font: { family: fontFamily, size: 11 }, color: '#9CA3AF' },
+                ticks: { font: { family: fontFamily, size: 10 }, color: '#6B7280', autoSkip: false, maxRotation: 45, minRotation: 0 },
             },
             y: {
-                grid: { color: '#F3F4F6' },
-                ticks: { font: { family: fontFamily, size: 11 }, color: '#9CA3AF' },
-                beginAtZero: true,
+                grid: { color: '#F3F4F6', drawBorder: false },
+                ticks: { display: false }, // Cleaner look
             },
         },
         plugins: {
-            legend: {
-                position: 'top',
-                align: 'end',
-                labels: {
-                    padding: 16,
-                    usePointStyle: true,
-                    pointStyleWidth: 8,
-                    font: { family: fontFamily, size: 11, weight: '500' },
-                    color: '#6B7280',
-                },
-            },
+            legend: { display: false },
         },
     };
 
     return (
         <div className="charts-row">
             <div className="chart-card">
-                <h3>Risk Distribution</h3>
+                <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ marginBottom: 0 }}>Portfolio Risk Split</h3>
+                    <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Real-time Distribution</span>
+                </div>
                 <div className="chart-container donut">
                     <Doughnut data={donutData} options={donutOptions} />
                 </div>
             </div>
             <div className="chart-card">
-                <h3>
-                    Risk Trend <span className="section-subtitle">Last 3 Months</span>
-                </h3>
+                <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ marginBottom: 0 }}>Behavioral Archetypes</h3>
+                    <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Cluster Analysis</span>
+                </div>
                 <div className="chart-container bar">
-                    <Bar data={trendData} options={trendOptions} />
+                    <Bar data={barData} options={barOptions} />
                 </div>
             </div>
         </div>

@@ -30,10 +30,10 @@ export default function CustomerTable({ customers, onSelectCustomer }) {
                                 <span style={{ color: 'var(--gray-400)', fontSize: '0.72rem' }}>{c.name}</span>
                             </td>
                             <td>
-                                <span className={`risk-score ${c.riskLevel}`}>{c.riskScore}</span>
+                                <span className={`risk-score ${c.riskLevel.toLowerCase()}`}>{c.riskScore}</span>
                             </td>
                             <td>
-                                <span className={`risk-badge ${c.riskLevel}`}>{c.riskLevel}</span>
+                                <span className={`risk-badge ${c.riskLevel.toLowerCase()}`}>{c.riskLevel}</span>
                             </td>
                             <td>{c.defaultProb}%</td>
                             <td>{c.salaryStatus}</td>

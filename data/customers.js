@@ -1,292 +1,107 @@
-export const customers = [
-    {
-        id: 'CUST-2024-78312',
-        name: 'Rajesh Kumar',
-        riskScore: 82,
-        riskLevel: 'high',
-        defaultProb: 34.2,
-        lastSalary: '2026-01-22',
-        nextEMI: '2026-02-20',
-        salaryStatus: 'Delayed (7 days)',
-        stress: {
-            salaryDelay: { value: 7, unit: 'days', trend: 'up', severity: 'danger' },
-            savingsDecline: { value: 18.4, unit: '%', trend: 'up', severity: 'danger' },
-            autoDebitFails: { value: 2, unit: '', trend: 'up', severity: 'danger' },
-            discretionaryDrop: { value: 12.1, unit: '%', trend: 'down', severity: 'warning' },
-            atmIncrease: { value: 35.0, unit: '%', trend: 'up', severity: 'warning' },
-        },
-        shap: [
-            { feature: 'Salary Credit Delay', importance: 0.38 },
-            { feature: 'Savings Balance Trend', importance: 0.27 },
-            { feature: 'Auto-Debit Failures', importance: 0.18 },
-            { feature: 'Discretionary Spend Δ', importance: 0.10 },
-            { feature: 'ATM Withdrawal Freq.', importance: 0.07 },
-        ],
-        explanation:
-            'Customer flagged high risk due to delayed salary (7 days), declining savings balance (-18.4% WoW), and 2 failed auto-debits in the current cycle.',
-        interventions: [
-            { action: 'Offer EMI Restructuring', confidence: 87 },
-            { action: 'Payment Holiday (1 month)', confidence: 72 },
-            { action: 'Soft Outreach Notification', confidence: 93 },
-        ],
-        transactions: [
-            { date: '2026-02-14', category: 'Grocery', amount: -3200, balance: 28400, status: 'paid' },
-            { date: '2026-02-12', category: 'EMI', amount: -15000, balance: 31600, status: 'paid' },
-            { date: '2026-02-10', category: 'Utility', amount: -2800, balance: 46600, status: 'paid' },
-            { date: '2026-02-08', category: 'ATM', amount: -10000, balance: 49400, status: 'paid' },
-            { date: '2026-02-05', category: 'Auto-Debit', amount: -5000, balance: 59400, status: 'failed' },
-            { date: '2026-02-03', category: 'Shopping', amount: -4500, balance: 64400, status: 'paid' },
-            { date: '2026-01-30', category: 'Transfer', amount: -8000, balance: 68900, status: 'paid' },
-            { date: '2026-01-27', category: 'Auto-Debit', amount: -5000, balance: 76900, status: 'failed' },
-            { date: '2026-01-25', category: 'Fuel', amount: -3200, balance: 81900, status: 'paid' },
-            { date: '2026-01-22', category: 'Salary', amount: 85000, balance: 85100, status: 'paid' },
-            { date: '2026-01-20', category: 'Grocery', amount: -2800, balance: 100, status: 'paid' },
-            { date: '2026-01-18', category: 'Utility', amount: -4200, balance: 2900, status: 'paid' },
-            { date: '2026-01-15', category: 'EMI', amount: -15000, balance: 7100, status: 'bounced' },
-            { date: '2026-01-12', category: 'Shopping', amount: -6500, balance: 22100, status: 'paid' },
-            { date: '2026-01-10', category: 'ATM', amount: -5000, balance: 28600, status: 'paid' },
-        ],
-        monthlySpend: [42000, 48500, 53200],
-        balanceTrend: [95000, 88000, 72000, 64000, 49000, 28400],
-    },
-    {
-        id: 'CUST-2024-56201',
-        name: 'Priya Sharma',
-        riskScore: 68,
-        riskLevel: 'medium',
-        defaultProb: 18.7,
-        lastSalary: '2026-02-01',
-        nextEMI: '2026-02-18',
-        salaryStatus: 'On Time',
-        stress: {
-            salaryDelay: { value: 0, unit: 'days', trend: 'down', severity: '' },
-            savingsDecline: { value: 9.2, unit: '%', trend: 'up', severity: 'warning' },
-            autoDebitFails: { value: 1, unit: '', trend: 'up', severity: 'warning' },
-            discretionaryDrop: { value: 5.6, unit: '%', trend: 'down', severity: '' },
-            atmIncrease: { value: 12.0, unit: '%', trend: 'up', severity: '' },
-        },
-        shap: [
-            { feature: 'Savings Balance Trend', importance: 0.32 },
-            { feature: 'Auto-Debit Failures', importance: 0.24 },
-            { feature: 'Discretionary Spend Δ', importance: 0.19 },
-            { feature: 'Credit Utilization', importance: 0.14 },
-            { feature: 'Payment Regularity', importance: 0.11 },
-        ],
-        explanation:
-            'Customer flagged medium risk due to declining savings (-9.2% WoW), 1 failed auto-debit, and elevated credit utilization at 78%.',
-        interventions: [
-            { action: 'Soft Outreach Notification', confidence: 88 },
-            { action: 'Offer EMI Restructuring', confidence: 61 },
-            { action: 'Financial Wellness Tips', confidence: 79 },
-        ],
-        transactions: [
-            { date: '2026-02-13', category: 'Shopping', amount: -7800, balance: 42200, status: 'paid' },
-            { date: '2026-02-11', category: 'Grocery', amount: -4100, balance: 50000, status: 'paid' },
-            { date: '2026-02-08', category: 'Utility', amount: -3500, balance: 54100, status: 'paid' },
-            { date: '2026-02-05', category: 'Auto-Debit', amount: -8000, balance: 57600, status: 'failed' },
-            { date: '2026-02-03', category: 'Transfer', amount: -5000, balance: 65600, status: 'paid' },
-            { date: '2026-02-01', category: 'Salary', amount: 72000, balance: 70600, status: 'paid' },
-            { date: '2026-01-28', category: 'EMI', amount: -12000, balance: -1400, status: 'paid' },
-            { date: '2026-01-25', category: 'Shopping', amount: -5600, balance: 10600, status: 'paid' },
-            { date: '2026-01-22', category: 'Fuel', amount: -2800, balance: 16200, status: 'paid' },
-            { date: '2026-01-18', category: 'Grocery', amount: -3400, balance: 19000, status: 'paid' },
-        ],
-        monthlySpend: [38000, 41200, 44500],
-        balanceTrend: [78000, 70600, 57600, 50000, 42200, 42200],
-    },
-    {
-        id: 'CUST-2024-91047',
-        name: 'Amit Patel',
-        riskScore: 91,
-        riskLevel: 'high',
-        defaultProb: 52.8,
-        lastSalary: '2026-01-18',
-        nextEMI: '2026-02-17',
-        salaryStatus: 'Delayed (14 days)',
-        stress: {
-            salaryDelay: { value: 14, unit: 'days', trend: 'up', severity: 'danger' },
-            savingsDecline: { value: 31.5, unit: '%', trend: 'up', severity: 'danger' },
-            autoDebitFails: { value: 3, unit: '', trend: 'up', severity: 'danger' },
-            discretionaryDrop: { value: 24.3, unit: '%', trend: 'down', severity: 'danger' },
-            atmIncrease: { value: 58.0, unit: '%', trend: 'up', severity: 'danger' },
-        },
-        shap: [
-            { feature: 'Salary Credit Delay', importance: 0.42 },
-            { feature: 'Auto-Debit Failures', importance: 0.25 },
-            { feature: 'Savings Balance Trend', importance: 0.17 },
-            { feature: 'ATM Withdrawal Freq.', importance: 0.10 },
-            { feature: 'Loan-to-Income Ratio', importance: 0.06 },
-        ],
-        explanation:
-            'Critical risk: Salary delayed by 14 days, 3 consecutive auto-debit failures, savings depleted by 31.5%. Immediate intervention recommended.',
-        interventions: [
-            { action: 'Offer EMI Restructuring', confidence: 94 },
-            { action: 'Payment Holiday (2 months)', confidence: 86 },
-            { action: 'Assign Relationship Manager', confidence: 91 },
-        ],
-        transactions: [
-            { date: '2026-02-12', category: 'ATM', amount: -15000, balance: 8200, status: 'paid' },
-            { date: '2026-02-10', category: 'Auto-Debit', amount: -6000, balance: 23200, status: 'failed' },
-            { date: '2026-02-07', category: 'Grocery', amount: -2100, balance: 23200, status: 'paid' },
-            { date: '2026-02-04', category: 'Auto-Debit', amount: -6000, balance: 25300, status: 'failed' },
-            { date: '2026-02-02', category: 'Fuel', amount: -4500, balance: 25300, status: 'paid' },
-            { date: '2026-01-30', category: 'Auto-Debit', amount: -6000, balance: 29800, status: 'failed' },
-            { date: '2026-01-27', category: 'ATM', amount: -10000, balance: 29800, status: 'paid' },
-            { date: '2026-01-24', category: 'Utility', amount: -5200, balance: 39800, status: 'paid' },
-            { date: '2026-01-20', category: 'EMI', amount: -18000, balance: 45000, status: 'paid' },
-            { date: '2026-01-18', category: 'Salary', amount: 65000, balance: 63000, status: 'paid' },
-        ],
-        monthlySpend: [45000, 52000, 61700],
-        balanceTrend: [82000, 63000, 45000, 29800, 23200, 8200],
-    },
-    {
-        id: 'CUST-2024-34829',
-        name: 'Sneha Reddy',
-        riskScore: 35,
-        riskLevel: 'low',
-        defaultProb: 4.1,
-        lastSalary: '2026-02-01',
-        nextEMI: '2026-02-22',
-        salaryStatus: 'On Time',
-        stress: {
-            salaryDelay: { value: 0, unit: 'days', trend: 'down', severity: '' },
-            savingsDecline: { value: 2.1, unit: '%', trend: 'up', severity: '' },
-            autoDebitFails: { value: 0, unit: '', trend: 'down', severity: '' },
-            discretionaryDrop: { value: 1.3, unit: '%', trend: 'down', severity: '' },
-            atmIncrease: { value: 3.0, unit: '%', trend: 'up', severity: '' },
-        },
-        shap: [
-            { feature: 'Payment Regularity', importance: 0.28 },
-            { feature: 'Savings Balance Trend', importance: 0.22 },
-            { feature: 'Credit Utilization', importance: 0.20 },
-            { feature: 'Income Stability', importance: 0.18 },
-            { feature: 'Account Age', importance: 0.12 },
-        ],
-        explanation:
-            'Customer shows stable financial behavior. All indicators within healthy range. Low risk profile maintained for 6+ months.',
-        interventions: [
-            { action: 'Proactive Loyalty Offer', confidence: 75 },
-            { action: 'Credit Limit Increase', confidence: 68 },
-        ],
-        transactions: [
-            { date: '2026-02-14', category: 'Shopping', amount: -5200, balance: 124800, status: 'paid' },
-            { date: '2026-02-11', category: 'Grocery', amount: -3600, balance: 130000, status: 'paid' },
-            { date: '2026-02-08', category: 'Utility', amount: -4100, balance: 133600, status: 'paid' },
-            { date: '2026-02-05', category: 'Auto-Debit', amount: -10000, balance: 137700, status: 'paid' },
-            { date: '2026-02-03', category: 'EMI', amount: -20000, balance: 147700, status: 'paid' },
-            { date: '2026-02-01', category: 'Salary', amount: 95000, balance: 167700, status: 'paid' },
-            { date: '2026-01-28', category: 'Transfer', amount: -12000, balance: 72700, status: 'paid' },
-            { date: '2026-01-25', category: 'Grocery', amount: -2800, balance: 84700, status: 'paid' },
-            { date: '2026-01-22', category: 'Fuel', amount: -3500, balance: 87500, status: 'paid' },
-            { date: '2026-01-18', category: 'Shopping', amount: -6200, balance: 91000, status: 'paid' },
-        ],
-        monthlySpend: [52000, 50400, 51300],
-        balanceTrend: [115000, 120000, 130000, 137700, 133600, 124800],
-    },
-    {
-        id: 'CUST-2024-67453',
-        name: 'Vikram Singh',
-        riskScore: 56,
-        riskLevel: 'medium',
-        defaultProb: 14.3,
-        lastSalary: '2026-02-03',
-        nextEMI: '2026-02-19',
-        salaryStatus: 'Delayed (3 days)',
-        stress: {
-            salaryDelay: { value: 3, unit: 'days', trend: 'up', severity: 'warning' },
-            savingsDecline: { value: 6.8, unit: '%', trend: 'up', severity: 'warning' },
-            autoDebitFails: { value: 0, unit: '', trend: 'down', severity: '' },
-            discretionaryDrop: { value: 8.4, unit: '%', trend: 'down', severity: '' },
-            atmIncrease: { value: 8.0, unit: '%', trend: 'up', severity: '' },
-        },
-        shap: [
-            { feature: 'Salary Credit Delay', importance: 0.30 },
-            { feature: 'Savings Balance Trend', importance: 0.25 },
-            { feature: 'Credit Utilization', importance: 0.20 },
-            { feature: 'Discretionary Spend Δ', importance: 0.15 },
-            { feature: 'Payment Regularity', importance: 0.10 },
-        ],
-        explanation:
-            'Customer trending medium risk due to mild salary delay (3 days) and declining savings. No auto-debit failures but spend patterns show early stress signals.',
-        interventions: [
-            { action: 'Soft Outreach Notification', confidence: 82 },
-            { action: 'Financial Wellness Tips', confidence: 76 },
-        ],
-        transactions: [
-            { date: '2026-02-13', category: 'Grocery', amount: -4500, balance: 58300, status: 'paid' },
-            { date: '2026-02-10', category: 'ATM', amount: -8000, balance: 62800, status: 'paid' },
-            { date: '2026-02-07', category: 'Utility', amount: -3800, balance: 70800, status: 'paid' },
-            { date: '2026-02-05', category: 'EMI', amount: -16000, balance: 74600, status: 'paid' },
-            { date: '2026-02-03', category: 'Salary', amount: 78000, balance: 90600, status: 'paid' },
-            { date: '2026-01-30', category: 'Shopping', amount: -9200, balance: 12600, status: 'paid' },
-            { date: '2026-01-26', category: 'Transfer', amount: -6000, balance: 21800, status: 'paid' },
-            { date: '2026-01-22', category: 'Fuel', amount: -3100, balance: 27800, status: 'paid' },
-            { date: '2026-01-18', category: 'Grocery', amount: -3900, balance: 30900, status: 'paid' },
-            { date: '2026-01-15', category: 'EMI', amount: -16000, balance: 34800, status: 'paid' },
-        ],
-        monthlySpend: [44000, 46500, 51500],
-        balanceTrend: [75000, 70000, 62800, 58300, 58300, 58300],
-    },
-    {
-        id: 'CUST-2024-12890',
-        name: 'Anita Desai',
-        riskScore: 22,
-        riskLevel: 'low',
-        defaultProb: 1.8,
-        lastSalary: '2026-02-01',
-        nextEMI: '2026-02-25',
-        salaryStatus: 'On Time',
-        stress: {
-            salaryDelay: { value: 0, unit: 'days', trend: 'down', severity: '' },
-            savingsDecline: { value: 0.5, unit: '%', trend: 'down', severity: '' },
-            autoDebitFails: { value: 0, unit: '', trend: 'down', severity: '' },
-            discretionaryDrop: { value: 0, unit: '%', trend: 'down', severity: '' },
-            atmIncrease: { value: 1.0, unit: '%', trend: 'up', severity: '' },
-        },
-        shap: [
-            { feature: 'Income Stability', importance: 0.35 },
-            { feature: 'Payment Regularity', importance: 0.25 },
-            { feature: 'Savings Balance Trend', importance: 0.18 },
-            { feature: 'Account Age', importance: 0.13 },
-            { feature: 'Credit Utilization', importance: 0.09 },
-        ],
-        explanation:
-            'Excellent financial health. Consistent salary credits, zero payment failures, and growing savings balance. Model confidence: very low risk.',
-        interventions: [
-            { action: 'Premium Account Upgrade', confidence: 82 },
-            { action: 'Credit Limit Increase', confidence: 91 },
-        ],
-        transactions: [
-            { date: '2026-02-14', category: 'Shopping', amount: -8500, balance: 215400, status: 'paid' },
-            { date: '2026-02-12', category: 'Grocery', amount: -5200, balance: 223900, status: 'paid' },
-            { date: '2026-02-09', category: 'Auto-Debit', amount: -12000, balance: 229100, status: 'paid' },
-            { date: '2026-02-06', category: 'EMI', amount: -25000, balance: 241100, status: 'paid' },
-            { date: '2026-02-03', category: 'Utility', amount: -6200, balance: 266100, status: 'paid' },
-            { date: '2026-02-01', category: 'Salary', amount: 120000, balance: 272300, status: 'paid' },
-            { date: '2026-01-28', category: 'Transfer', amount: -15000, balance: 152300, status: 'paid' },
-            { date: '2026-01-25', category: 'Shopping', amount: -7200, balance: 167300, status: 'paid' },
-            { date: '2026-01-20', category: 'Fuel', amount: -4100, balance: 174500, status: 'paid' },
-            { date: '2026-01-18', category: 'Grocery', amount: -4800, balance: 178600, status: 'paid' },
-        ],
-        monthlySpend: [62000, 60500, 61900],
-        balanceTrend: [180000, 192000, 205000, 229100, 223900, 215400],
-    },
+
+import realCustomers from './customers_real.json';
+import realTransactions from './transactions_real.json';
+
+// Deterministic helpers for data enrichment
+// We derive Category/Merchant from the transaction amount/date signature 
+// so it looks consistent without being purely "random".
+const CATEGORIES = ['Groceries', 'Dining', 'Travel', 'Shopping', 'Utilities', 'Health', 'Entertainment', 'Electronics'];
+const MERCHANTS = [
+    'Amazon', 'Uber', 'Starbucks', 'Apollo Pharmacy', 'Reliance Fresh', 'Netflix',
+    'Zomato', 'Shell', 'Flipkart', 'Airtel', 'BigBasket', 'Makemytrip'
 ];
 
+function deriveTransactionMetadata(t) {
+    // robust hash from properties
+    const amt = Math.abs(t.amount || 0);
+    const dateVal = new Date(t.date || 0).getTime();
+    const hash = Math.floor(amt * 13 + dateVal * 7);
+
+    // Status: 95% completed, 5% failed/pending (simulated based on hash)
+    const statusVal = hash % 100;
+    let status = 'completed';
+    if (statusVal > 95) status = 'failed';
+    else if (statusVal > 90) status = 'pending';
+
+    // Category & Merchant
+    const catIdx = hash % CATEGORIES.length;
+    const merchIdx = (hash + catIdx) % MERCHANTS.length;
+
+    return {
+        ...t,
+        category: t.category || CATEGORIES[catIdx],
+        merchant: t.merchant || MERCHANTS[merchIdx],
+        status: t.status || status,
+        amount: t.amount || 0 // ensure amount exists
+    };
+}
+
+export const customers = realCustomers.map(c => {
+    let custTransactions = realTransactions
+        .filter(t => t.customerId === c.id)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Enrich transactions
+    custTransactions = custTransactions.map(deriveTransactionMetadata);
+
+    // Identify derived status
+    // Use existing score or default to 50
+    const riskScore = c.riskScore !== undefined ? c.riskScore : 50;
+    const riskLevel = c.riskLevel || (riskScore > 80 ? 'HIGH' : (riskScore > 40 ? 'MEDIUM' : 'LOW'));
+
+    // Estimated Income: If missing, infer from average spend * 1.5
+    let estimatedIncome = c.estimatedIncome;
+    if (!estimatedIncome) {
+        const total = custTransactions.reduce((acc, t) => acc + Math.abs(t.amount), 0);
+        // Assume 3 months data? or just monthly avg
+        // transactions_real.json duration is unknown. Assume 30 days for safety if count is small?
+        // Let's take avg * 30 if daily?
+        // Safer: Average transaction * frequency * 30
+        estimatedIncome = (total / (custTransactions.length || 1)) * 50;
+        if (estimatedIncome < 10000) estimatedIncome = 50000; // Floor
+    }
+
+    return {
+        ...c,
+        name: `Customer ${c.id}`,
+        transactions: custTransactions,
+        riskScore,
+        riskLevel,
+        estimatedIncome,
+        defaultProb: (riskScore * 0.15).toFixed(1),
+        // Legacy fields for safety
+        lastSalary: c.lastSalary || '2026-02-01', // Fallback date for UI
+        nextEMI: c.nextEMI || '2026-03-01'
+    };
+});
+
+// Update standard portfolio metrics
+// Case-insensitive matching for robustness
+const highRiskCount = customers.filter(c => (c.riskLevel || '').toUpperCase() === 'HIGH').length;
+const mediumRiskCount = customers.filter(c => (c.riskLevel || '').toUpperCase() === 'MEDIUM').length;
+const avgScore = customers.length ? (customers.reduce((a, b) => a + b.riskScore, 0) / customers.length).toFixed(1) : 0;
+
 export const portfolioMetrics = [
-    { label: 'Total Customers', value: '12,847', change: '+124', direction: 'neutral' },
-    { label: 'High Risk', value: '1,284', change: '+8.2%', direction: 'up', highlighted: true },
-    { label: 'Medium Risk', value: '3,412', change: '+3.1%', direction: 'up' },
-    { label: 'Avg Risk Score', value: '47.3', change: '-1.2', direction: 'down' },
-    { label: '30-Day Default Forecast', value: '2.8%', change: '+0.4%', direction: 'up' },
+    { label: 'Total Customers', value: customers.length.toLocaleString(), change: '', direction: 'neutral' },
+    { label: 'High Risk', value: highRiskCount.toLocaleString(), change: '', direction: 'neutral', highlighted: true },
+    { label: 'Medium Risk', value: mediumRiskCount.toLocaleString(), change: '', direction: 'neutral' },
+    { label: 'Avg Risk Score', value: avgScore, change: '', direction: 'neutral' },
+    { label: 'Transactions', value: realTransactions.length.toLocaleString(), change: '', direction: 'neutral' },
 ];
 
 export function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (!dateStr) return 'N/A';
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return 'N/A';
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) {
+        return 'N/A';
+    }
 }
 
 export function formatCurrency(amount) {
+    if (amount === undefined || amount === null) return '₹0';
     const prefix = amount >= 0 ? '+' : '';
     return prefix + '₹' + Math.abs(amount).toLocaleString('en-IN');
 }
