@@ -1059,3 +1059,225 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== DARK MODE THEME ===== */
+[data-theme='dark'] {
+  --primary-50: #1E293B;
+  --primary-100: #1E3A5F;
+  --primary-200: #1E4D8C;
+  --primary-300: #3B82F6;
+  --primary-400: #60A5FA;
+  --primary-500: #93C5FD;
+  --primary-600: #93C5FD;
+  --primary-700: #BFDBFE;
+
+  --gray-25: #1A1D23;
+  --gray-50: #1E2128;
+  --gray-100: #282C34;
+  --gray-200: #353A45;
+  --gray-300: #4B5563;
+  --gray-400: #9CA3AF;
+  --gray-500: #C9CDD5;
+  --gray-600: #D1D5DB;
+  --gray-700: #E5E7EB;
+  --gray-800: #F3F4F6;
+  --gray-900: #F9FAFB;
+
+  --risk-low-bg: #064E3B;
+  --risk-medium-bg: #78350F;
+  --risk-high-bg: #7F1D1D;
+
+  --white: #111318;
+  --bg: #0D0F12;
+  --sidebar-bg: #111318;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .stress-card.warning {
+  border-color: #92400E;
+  background: #451a03;
+}
+
+[data-theme='dark'] .stress-card.danger {
+  border-color: #991B1B;
+  background: #450a0a;
+}
+
+[data-theme='dark'] .explanation-box {
+  background: #1E293B;
+  border-left-color: var(--primary-400);
+  color: var(--gray-600);
+}
+
+[data-theme='dark'] .header-search input:focus {
+  background: #1E2128;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+[data-theme='dark'] .header-filter select {
+  color: var(--gray-600);
+}
+
+/* ===== SETTINGS PANEL ===== */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.settings-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.settings-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  background: var(--white);
+  border-left: 1px solid var(--gray-200);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-drawer.open {
+  transform: translateX(0);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.settings-header h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.settings-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--gray-50);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--gray-500);
+  transition: all var(--transition);
+  font-size: 1.1rem;
+  font-family: inherit;
+}
+
+.settings-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.settings-section {
+  margin-bottom: 28px;
+}
+
+.settings-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  margin-bottom: 12px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.settings-option:last-child {
+  border-bottom: none;
+}
+
+.settings-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-option-info .option-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.settings-option-info .option-desc {
+  font-size: 0.72rem;
+  color: var(--gray-400);
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-200);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease;
+}
+
+.toggle input:checked+.toggle-slider {
+  background: var(--primary-500);
+}
+
+.toggle input:checked+.toggle-slider::before {
+  transform: translateX(20px);
+}

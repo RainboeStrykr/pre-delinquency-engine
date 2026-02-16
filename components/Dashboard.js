@@ -9,6 +9,7 @@ import CustomerTable from '@/components/CustomerTable';
 import CustomerDetail from '@/components/CustomerDetail';
 import RiskSignals from '@/components/RiskSignals';
 import Interventions from '@/components/Interventions';
+import Settings from '@/components/Settings';
 import { customers } from '@/data/customers';
 
 export default function Home() {
@@ -18,6 +19,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [riskFilter, setRiskFilter] = useState('all');
   const [toast, setToast] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const filteredCustomers = useMemo(() => {
     let result = customers;
@@ -97,6 +100,7 @@ export default function Home() {
       <Sidebar
         activeView={activeView === 'detail' ? previousView : activeView}
         onNavigate={handleNavigate}
+        onSettingsClick={() => setSettingsOpen(true)}
       />
       <div className="main">
         <Header
@@ -149,6 +153,14 @@ export default function Home() {
 
       {/* Toast */}
       <div className={`toast${toast ? ' show' : ''}`}>{toast}</div>
+
+      {/* Settings Drawer */}
+      <Settings
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+      />
     </div>
   );
 }
