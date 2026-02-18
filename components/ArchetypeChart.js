@@ -12,6 +12,7 @@ import {
 import { PolarArea } from 'react-chartjs-2';
 import { customers } from '@/data/customers';
 import { getPortfolioClusters } from '@/lib/engines/stress-clustering';
+import { MagicBentoCard } from '@/components/MagicBento';
 
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -66,7 +67,7 @@ export default function ArchetypeChart() {
     };
 
     return (
-        <div className="chart-card">
+        <MagicBentoCard className="chart-card" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
             <h3>Stress Archetype Distribution</h3>
             <div className="chart-container" style={{ position: 'relative', height: '280px', width: '100%' }}>
                 <PolarArea data={data} options={options} />
@@ -83,6 +84,6 @@ export default function ArchetypeChart() {
                     </div>
                 ))}
             </div>
-        </div>
+        </MagicBentoCard>
     );
 }

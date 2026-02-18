@@ -19,6 +19,7 @@ import { calculateRiskAcceleration } from '@/lib/engines/risk-acceleration';
 
 import { assignArchetype } from '@/lib/engines/stress-clustering';
 import { calculateUnifiedIndex } from '@/lib/engines/unified-stress-index';
+import { MagicBentoCard } from '@/components/MagicBento';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -203,7 +204,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
             </button>
 
             {/* Summary Card */}
-            <div className="customer-summary">
+            <MagicBentoCard className="customer-summary" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
                 <div className="summary-risk-circle" style={{
                     background: usi.level === 'CRITICAL' ? '#FEF2F2' : (usi.level === 'HIGH' ? '#FFFBEB' : (usi.level === 'MODERATE' ? '#F0F9FF' : '#ECFDF5')),
                     border: `4px solid ${usi.level === 'CRITICAL' ? '#DC2626' : (usi.level === 'HIGH' ? '#D97706' : (usi.level === 'MODERATE' ? '#0284C7' : '#059669'))}`
@@ -273,11 +274,11 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                         </span>
                     )}
                 </div>
-            </div>
+            </MagicBentoCard>
 
             {/* --- NEW: Behavioral Drift Analysis Panel --- */}
             {true && (
-                <div className="panel" style={{ marginBottom: '20px', borderLeft: '4px solid #F59E0B' }}>
+                <MagicBentoCard className="panel" style={{ marginBottom: '20px', borderLeft: '4px solid #F59E0B', minHeight: 'auto', aspectRatio: 'unset' }}>
                     <div className="panel-header">
                         <h3>Behavioral Drift Analysis</h3>
                         <span className="badge" style={{ background: '#FFFBEB', color: '#B45309' }}>
@@ -318,13 +319,13 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                             </div>
                         )}
                     </div>
-                </div>
+                </MagicBentoCard>
             )}
 
             {/* Detail Grid */}
             <div className="detail-grid">
                 {/* 1. Historical Balance (Real) */}
-                <div className="panel">
+                <MagicBentoCard className="panel" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
                     <div className="panel-header">
                         <h3>Balance History (6 Mo)</h3>
                     </div>
@@ -335,10 +336,10 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                             <div className="empty-state">No Data</div>
                         )}
                     </div>
-                </div>
+                </MagicBentoCard>
 
                 {/* 2. Monthly Outflow Trend (Real) */}
-                <div className="panel">
+                <MagicBentoCard className="panel" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
                     <div className="panel-header">
                         <h3>Monthly Outflow Trend</h3>
                     </div>
@@ -349,11 +350,11 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                             <div className="empty-state">No Data</div>
                         )}
                     </div>
-                </div>
+                </MagicBentoCard>
 
 
                 {/* Transaction History & Balance */}
-                <div className="panel" style={{ gridColumn: '1 / -1' }}>
+                <MagicBentoCard className="panel" style={{ gridColumn: '1 / -1', minHeight: 'auto', aspectRatio: 'unset' }}>
                     <div className="panel-header">
                         <h3>Transaction History</h3>
                     </div>
@@ -406,11 +407,11 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                         </div>
 
                     </div>
-                </div>
+                </MagicBentoCard>
 
                 {/* --- Intervention Recommendations --- */}
                 {interventions.length > 0 && (
-                    <div className="panel" style={{ gridColumn: '1 / -1' }}>
+                    <MagicBentoCard className="panel" style={{ gridColumn: '1 / -1', minHeight: 'auto', aspectRatio: 'unset' }}>
                         <div className="panel-header">
                             <h3>Intervention Recommendations</h3>
                             <span className="badge" style={{
@@ -459,7 +460,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </MagicBentoCard>
                 )}
 
 

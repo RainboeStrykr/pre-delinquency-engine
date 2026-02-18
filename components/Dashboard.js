@@ -10,8 +10,11 @@ import CustomerDetail from '@/components/CustomerDetail';
 import RiskSignals from '@/components/RiskSignals';
 import Interventions from '@/components/Interventions';
 import ArchetypeChart from '@/components/ArchetypeChart';
+import { MagicBentoCard } from '@/components/MagicBento';
 import Settings from '@/components/Settings';
 import { customers } from '@/data/customers';
+
+
 
 export default function Home() {
   const [activeView, setActiveView] = useState('overview');
@@ -31,7 +34,7 @@ export default function Home() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(
-        (c) => c.id.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
+        (c) => String(c.id).toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
       );
     }
     return result;
@@ -61,12 +64,6 @@ export default function Home() {
   const handleSearch = useCallback(
     (query) => {
       setSearchQuery(query);
-      // Jump to detail if exact match
-      const exact = customers.find((c) => c.id.toLowerCase() === query.toLowerCase().trim());
-      if (exact) {
-        handleSelectCustomer(exact.id);
-        return;
-      }
       // Switch to customers view so the filtered table is visible
       if (query.trim() && activeView !== 'overview' && activeView !== 'customers') {
         setActiveView('customers');
@@ -77,7 +74,17 @@ export default function Home() {
         setSelectedCustomerId(null);
       }
     },
-    [activeView, handleSelectCustomer]
+    [activeView]
+  );
+
+  const handleSearchSubmit = useCallback(
+    (query) => {
+      const exact = customers.find((c) => String(c.id).toLowerCase() === query.toLowerCase().trim());
+      if (exact) {
+        handleSelectCustomer(exact.id);
+      }
+    },
+    [handleSelectCustomer]
   );
 
   const handleRiskFilter = useCallback(
@@ -109,6 +116,7 @@ export default function Home() {
           activeView={activeView}
           searchQuery={searchQuery}
           onSearchChange={handleSearch}
+          onSearchSubmit={handleSearchSubmit}
           riskFilter={riskFilter}
           onRiskFilterChange={handleRiskFilter}
         />
@@ -123,11 +131,11 @@ export default function Home() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                 <ArchetypeChart />
                 {/* Empty slot for balance projection aggregate or migration matrix */}
-                <div className="chart-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', minHeight: '300px', background: '#F9FAFB', borderStyle: 'dashed' }}>
+                <MagicBentoCard className="chart-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', minHeight: '300px', aspectRatio: 'unset', borderStyle: 'dashed' }}>
                   <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔄</div>
                   <div style={{ fontWeight: 500 }}>Risk Migration Matrix</div>
                   <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Coming soon in Phase 2</div>
-                </div>
+                </MagicBentoCard>
               </div>
 
               <CustomerTable

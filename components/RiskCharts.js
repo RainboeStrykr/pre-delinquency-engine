@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { customers } from '@/data/customers';
+import { MagicBentoCard } from '@/components/MagicBento';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -120,7 +121,7 @@ export default function RiskCharts() {
 
     return (
         <div className="charts-row">
-            <div className="chart-card">
+            <MagicBentoCard className="chart-card" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
                 <div style={{ marginBottom: '16px' }}>
                     <h3 style={{ marginBottom: 0 }}>Portfolio Risk Split</h3>
                     <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Real-time Distribution</span>
@@ -128,8 +129,8 @@ export default function RiskCharts() {
                 <div className="chart-container donut">
                     <Doughnut data={donutData} options={donutOptions} />
                 </div>
-            </div>
-            <div className="chart-card">
+            </MagicBentoCard>
+            <MagicBentoCard className="chart-card" style={{ minHeight: 'auto', aspectRatio: 'unset' }}>
                 <div style={{ marginBottom: '16px' }}>
                     <h3 style={{ marginBottom: 0 }}>Behavioral Archetypes</h3>
                     <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Cluster Analysis</span>
@@ -137,7 +138,7 @@ export default function RiskCharts() {
                 <div className="chart-container bar">
                     <Bar data={barData} options={barOptions} />
                 </div>
-            </div>
+            </MagicBentoCard>
         </div>
     );
 }

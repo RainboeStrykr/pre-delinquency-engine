@@ -68,6 +68,207 @@
   --white: #ffffff;
 }
 
+/* ===== 🌙 DARK MODE OVERRIDES ===== */
+[data-theme="dark"] {
+  /* Neutrals — invert the slate scale */
+  --slate-25: #0b1120;
+  --slate-50: #0f172a;
+  --slate-100: #1e293b;
+  --slate-200: #334155;
+  --slate-300: #475569;
+  --slate-400: #94a3b8;
+  --slate-500: #94a3b8;
+  --slate-600: #cbd5e1;
+  --slate-700: #e2e8f0;
+  --slate-800: #f1f5f9;
+  --slate-900: #f8fafc;
+
+  /* Risk semantic — softer on dark */
+  --risk-low-bg: rgba(16, 185, 129, 0.12);
+  --risk-low-border: rgba(16, 185, 129, 0.25);
+  --risk-medium-bg: rgba(245, 158, 11, 0.12);
+  --risk-medium-border: rgba(245, 158, 11, 0.25);
+  --risk-high-bg: rgba(239, 68, 68, 0.12);
+  --risk-high-border: rgba(239, 68, 68, 0.25);
+
+  /* Primary tints for dark */
+  --primary-50: rgba(99, 102, 241, 0.12);
+  --primary-100: rgba(99, 102, 241, 0.18);
+  --primary-200: rgba(99, 102, 241, 0.25);
+
+  /* Card & surface tokens */
+  --card-bg: rgba(30, 41, 59, 0.8);
+  --card-border: 1px solid rgba(51, 65, 85, 0.6);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+  --bg-gradient: linear-gradient(135deg, #0b1120 0%, #0f172a 100%);
+  --sidebar-bg: #070d1b;
+  --white: #1e293b;
+}
+
+[data-theme="dark"] body {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .header {
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom-color: #1e293b;
+}
+
+[data-theme="dark"] .header-search input {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .header-search input::placeholder {
+  color: #64748b;
+}
+
+[data-theme="dark"] .header-filter select {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .panel,
+[data-theme="dark"] .chart-card,
+[data-theme="dark"] .metric-card {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #334155;
+}
+
+[data-theme="dark"] .panel-header {
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] .panel-header h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] table th {
+  color: #94a3b8;
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] table td {
+  color: #cbd5e1;
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+
+[data-theme="dark"] table tbody tr:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+[data-theme="dark"] .section-title {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .explanation-box {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .risk-badge.low {
+  background: var(--risk-low-bg);
+}
+
+[data-theme="dark"] .risk-badge.medium {
+  background: var(--risk-medium-bg);
+}
+
+[data-theme="dark"] .risk-badge.high {
+  background: var(--risk-high-bg);
+}
+
+[data-theme="dark"] .customer-summary {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: #334155;
+}
+
+[data-theme="dark"] .summary-info .info-item .info-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .summary-info .info-item .info-value {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .btn {
+  background: #4f46e5;
+  color: #fff;
+}
+
+[data-theme="dark"] .btn-outline {
+  background: transparent;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .settings-drawer {
+  background: #1e293b;
+  border-left-color: #334155;
+}
+
+[data-theme="dark"] .settings-header {
+  border-bottom-color: #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .settings-section-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .option-label {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .option-desc {
+  color: #64748b;
+}
+
+[data-theme="dark"] .profile-popup {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .profile-name {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .profile-detail-label {
+  color: #64748b;
+}
+
+[data-theme="dark"] .profile-detail-value {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .txn-filter-btn {
+  background: rgba(51, 65, 85, 0.5);
+  color: #cbd5e1;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .txn-filter-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .txn-filter-btn.active {
+  color: #fff;
+}
+
+[data-theme="dark"] .sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .toast {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
