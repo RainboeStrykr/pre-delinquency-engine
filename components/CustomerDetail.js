@@ -175,9 +175,24 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
         };
     }, [driftData]);
 
-    const handleTrigger = useCallback(() => {
-        onToast('✓ Action triggered successfully. Notification sent to relationship manager.');
+    const handleTrigger = useCallback((actionName) => {
+        onToast(`✓ "${actionName}" triggered successfully. Notification sent to relationship manager.`);
     }, [onToast]);
+
+    // --- Intervention Recommendations based on USI ---
+    const interventions = useMemo(() => {
+        const score = usi.score;
+        const all = [
+            { id: 'emi_restructuring', name: 'EMI Restructuring', icon: '📊', category: 'Financial Relief', desc: 'Modify EMI schedule — extend tenure, reduce installments, or adjust rates.', minScore: 61, action: 'Apply Action' },
+            { id: 'payment_holiday', name: 'Payment Holiday', icon: '🗓️', category: 'Financial Relief', desc: 'Temporary 1–3 month pause on EMI payments during acute stress.', minScore: 71, action: 'Apply Action' },
+            { id: 'soft_outreach', name: 'Soft Outreach', icon: '💬', category: 'Communication', desc: 'Personalized, empathetic notification acknowledging difficulty and offering help.', minScore: 31, maxScore: 80, action: 'Trigger Outreach' },
+            { id: 'financial_wellness', name: 'Financial Wellness Tips', icon: '📘', category: 'Communication', desc: 'Targeted budgeting and savings guidance based on spending patterns.', minScore: 31, maxScore: 60, action: 'Trigger Outreach' },
+            { id: 'rm_assignment', name: 'Assign Relationship Manager', icon: '👤', category: 'Personal Engagement', desc: 'Escalate to a dedicated RM for one-on-one counseling.', minScore: 80, action: 'Apply Action' },
+            { id: 'loyalty_offer', name: 'Proactive Loyalty Offer', icon: '⭐', category: 'Retention', desc: 'Cashback, fee waiver, or rate discount to strengthen loyalty.', minScore: 0, maxScore: 30, action: 'Apply Action' },
+            { id: 'credit_limit', name: 'Credit Limit Increase', icon: '💳', category: 'Retention', desc: 'Proactively increase credit limit for low-risk customers.', minScore: 0, maxScore: 25, action: 'Apply Action' },
+        ];
+        return all.filter(i => score >= i.minScore && (i.maxScore === undefined || score <= i.maxScore));
+    }, [usi.score]);
 
     return (
         <div className="text-gray-900">
@@ -338,7 +353,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
 
 
                 {/* Transaction History & Balance */}
-                <div className="panel">
+                <div className="panel" style={{ gridColumn: '1 / -1' }}>
                     <div className="panel-header">
                         <h3>Transaction History</h3>
                     </div>
@@ -392,6 +407,60 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
 
                     </div>
                 </div>
+
+                {/* --- Intervention Recommendations --- */}
+                {interventions.length > 0 && (
+                    <div className="panel" style={{ gridColumn: '1 / -1' }}>
+                        <div className="panel-header">
+                            <h3>Intervention Recommendations</h3>
+                            <span className="badge" style={{
+                                background: usi.level === 'CRITICAL' ? '#FEF2F2' : (usi.level === 'HIGH' ? '#FFFBEB' : '#ECFDF5'),
+                                color: usi.level === 'CRITICAL' ? '#DC2626' : (usi.level === 'HIGH' ? '#B45309' : '#059669'),
+                            }}>
+                                {interventions.length} action{interventions.length > 1 ? 's' : ''} recommended
+                            </span>
+                        </div>
+                        <div className="panel-body">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {interventions.map((intv) => (
+                                    <div key={intv.id} style={{
+                                        display: 'flex', alignItems: 'center', gap: '16px',
+                                        padding: '16px', borderRadius: '12px',
+                                        background: 'var(--slate-50)', border: '1px solid var(--slate-100)',
+                                        transition: 'all 0.2s ease',
+                                    }}>
+                                        <div style={{
+                                            width: '42px', height: '42px', borderRadius: '10px',
+                                            background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: '1.3rem', border: '1px solid var(--slate-200)', flexShrink: 0,
+                                        }}>
+                                            {intv.icon}
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '2px' }}>
+                                                {intv.name}
+                                            </div>
+                                            <div style={{ fontSize: '0.78rem', color: 'var(--slate-500)', lineHeight: 1.5 }}>
+                                                {intv.desc}
+                                            </div>
+                                        </div>
+                                        <span style={{
+                                            fontSize: '0.68rem', padding: '3px 10px', borderRadius: '20px',
+                                            background: 'var(--primary-50)', color: 'var(--primary-600)',
+                                            fontWeight: 600, whiteSpace: 'nowrap',
+                                        }}>
+                                            {intv.category}
+                                        </span>
+                                        <button className="btn" style={{ fontSize: '0.78rem', padding: '8px 16px', whiteSpace: 'nowrap' }}
+                                            onClick={() => handleTrigger(intv.name)}>
+                                            {intv.action}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
 
             </div>
