@@ -611,6 +611,12 @@ tbody tr:hover {
   margin-top: 12px;
 }
 
+.summary-info .info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .summary-info .info-label {
   font-size: 0.75rem;
   color: var(--slate-400);
@@ -643,6 +649,13 @@ tbody tr:hover {
 .detail-back:hover {
   color: var(--primary-600);
   transform: translateX(-4px);
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 /* Buttons */
@@ -788,6 +801,41 @@ tbody tr:hover {
   cursor: pointer;
   outline: none;
   padding-right: 4px;
+}
+
+/* --- Transaction Filter Buttons --- */
+.txn-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.txn-filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--slate-50);
+  color: var(--slate-500);
+  border: 1px solid var(--slate-200);
+  white-space: nowrap;
+}
+
+.txn-filter-btn:hover {
+  background: var(--primary-50);
+  color: var(--primary-600);
+  border-color: var(--primary-200);
+}
+
+.txn-filter-btn.active {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 8px var(--primary-glow);
 }
 
 /* ===== DARK MODE THEME ===== */

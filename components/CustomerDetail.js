@@ -16,7 +16,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import { formatDate, formatCurrency } from '@/data/customers';
 import { calculateBehavioralDrift } from '@/lib/engines/behavioral-drift';
 import { calculateRiskAcceleration } from '@/lib/engines/risk-acceleration';
-import { calculateProjection } from '@/lib/engines/cashflow-projection';
+
 import { assignArchetype } from '@/lib/engines/stress-clustering';
 import { calculateUnifiedIndex } from '@/lib/engines/unified-stress-index';
 
@@ -47,8 +47,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
         return calculateRiskAcceleration(c.transactions, c.riskScore);
     }, [c.transactions, c.riskScore]);
 
-    // --- 3. Cashflow Projection (Liquidity) ---
-    const cashflow = useMemo(() => calculateProjection(c), [c]);
+
 
     // --- 4. Stress Archetype (Persona) ---
     const archetype = useMemo(() => assignArchetype(c), [c]);
@@ -139,39 +138,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
         interaction: { mode: 'index', intersect: false },
     };
 
-    // Remove legacy chart data logic if present
-    const cashflowChartData = useMemo(() => {
-        if (!cashflow) return null;
-        // Mock start date: Feb 14
-        const startDate = new Date('2026-02-14');
-        const labels = Array.from({ length: 30 }, (_, i) => {
-            const d = new Date(startDate);
-            d.setDate(startDate.getDate() + i);
-            return `${d.getDate()}/${d.getMonth() + 1}`;
-        });
 
-        // Identify EMI Date Index for highlighting
-        const emiDate = new Date(cashflow.emiDueDate);
-        const dayDiff = Math.ceil((emiDate - startDate) / (86400000));
-
-        return {
-            labels,
-            datasets: [
-                {
-                    label: 'Projected Balance',
-                    data: cashflow.projectedBalances,
-                    borderColor: cashflow.status === 'GAP' ? '#EF4444' : (cashflow.status === 'TIGHT' ? '#F59E0B' : '#10B981'),
-                    backgroundColor: cashflow.status === 'GAP' ? 'rgba(239, 68, 68, 0.1)' : (cashflow.status === 'TIGHT' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)'),
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: (ctx) => ctx.dataIndex === dayDiff ? 6 : 0,
-                    pointBackgroundColor: '#FFF',
-                    pointBorderColor: '#000',
-                    pointBorderWidth: 2
-                }
-            ]
-        };
-    }, [cashflow]);
 
     const categories = ['All', ...new Set(c.transactions.map((t) => t.category))];
 
@@ -369,61 +336,7 @@ export default function CustomerDetail({ customer, onBack, onToast }) {
                     </div>
                 </div>
 
-                {/* --- NEW: Cashflow Projection Panel --- */}
-                {cashflow && (
-                    <div className="panel" style={{ gridColumn: '1 / -1', marginBottom: '8px', borderLeft: cashflow.status === 'GAP' ? '4px solid #EF4444' : (cashflow.status === 'TIGHT' ? '4px solid #F59E0B' : '4px solid #10B981') }}>
-                        <div className="panel-header">
-                            <h3>30-Day Liquidity Forecast</h3>
-                            <span className="badge" style={{
-                                background: cashflow.status === 'GAP' ? '#FEF2F2' : (cashflow.status === 'TIGHT' ? '#FFFBEB' : '#ECFDF5'),
-                                color: cashflow.status === 'GAP' ? '#DC2626' : (cashflow.status === 'TIGHT' ? '#B45309' : '#059669'),
-                                fontWeight: 700
-                            }}>
-                                STATUS: {cashflow.status}
-                            </span>
-                        </div>
-                        <div className="panel-body" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
-                            <div>
-                                <div style={{ marginBottom: '16px' }}>
-                                    <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Projected Outcome</div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1F2937' }}>
-                                        {cashflow.liquidityGap > 0 ? (
-                                            <span style={{ color: '#DC2626' }}>-{formatCurrency(cashflow.liquidityGap)} Shortfall</span>
-                                        ) : (
-                                            <span style={{ color: '#059669' }}>Sufficient Liquidity</span>
-                                        )}
-                                    </div>
-                                </div>
 
-                                <div className="stress-grid" style={{ gridTemplateColumns: '1fr', gap: '8px' }}>
-                                    <div className="stress-card" style={{ borderLeft: 'none', background: '#F9FAFB' }}>
-                                        <div className="stress-label">Next EMI Liability</div>
-                                        <div className="stress-value">{formatCurrency(cashflow.emiAmount)} <span style={{ fontSize: '0.7em', color: '#6B7280' }}>on {formatDate(cashflow.emiDueDate)}</span></div>
-                                    </div>
-                                    <div className="stress-card" style={{ borderLeft: 'none', background: '#F9FAFB' }}>
-                                        <div className="stress-label">Projection Confidence</div>
-                                        <div className="stress-value">{cashflow.projectionConfidence}% <span style={{ fontSize: '0.7em', color: '#6B7280' }}>based on volatility</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style={{ height: '200px' }}>
-                                <Line
-                                    data={cashflowChartData}
-                                    options={{
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                                        scales: {
-                                            y: { beginAtZero: true, grid: { color: '#F3F4F6' } },
-                                            x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
-                                        },
-                                        interaction: { mode: 'index', intersect: false },
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
                 {/* Transaction History & Balance */}
                 <div className="panel">
                     <div className="panel-header">
