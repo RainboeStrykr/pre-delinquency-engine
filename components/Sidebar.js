@@ -35,8 +35,8 @@ export default function Sidebar({ activeView, onNavigate, onSettingsClick }) {
     return (
         <aside className="sidebar">
             <div className="sidebar-brand">
-                <h1>Pre-Delinquency<br />Intervention Engine</h1>
-                <span>TEAM CODECUTIES</span>
+                <h1>Pre-Delinquency<br />Detection Engine</h1>
+                <span>TEAM For The Win</span>
             </div>
             <nav className="sidebar-nav">
                 {navItems.map((item) => (

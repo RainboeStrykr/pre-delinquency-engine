@@ -29,7 +29,7 @@ export default function Home() {
   const filteredCustomers = useMemo(() => {
     let result = customers;
     if (riskFilter !== 'all') {
-      result = result.filter((c) => c.riskLevel === riskFilter);
+      result = result.filter((c) => c.riskLevel.toLowerCase() === riskFilter.toLowerCase());
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();

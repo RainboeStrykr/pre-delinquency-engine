@@ -17,7 +17,7 @@ export default function Header({ activeView, searchQuery, onSearchChange, onSear
         return () => document.removeEventListener('mousedown', handleClick);
     }, [profileOpen]);
 
-    const showFilters = activeView === 'customers';
+    const showFilters = activeView === 'customers' || activeView === 'overview';
 
     return (
         <header className="header">
